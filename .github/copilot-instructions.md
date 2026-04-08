@@ -26,6 +26,12 @@ go mod tidy
 
 Container build and push is handled by the [GitHub Actions workflow](workflows/build-and-push.yml) — targets `linux/amd64` via `ghcr.io`.
 
+## Security and Dependencies
+
+- Prefer Go standard library first.
+- Only add external dependencies that are trusted, actively maintained, and necessary.
+- Implement trivial utility functionality inside the project instead of adding third-party packages.
+
 ## Conventions
 
 **Output split:** products JSON → `stdout`; all logs (structured `log/slog`) → `stderr`. Never mix them.

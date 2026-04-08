@@ -132,9 +132,3 @@ gofmt -w .
 go test ./...
 go build ./cmd/fuel-prices
 ```
-
-## Security and Dependencies
-
-- Prefer Go standard library first.
-- Only add external dependencies that are trusted, actively maintained, and necessary.
-- Implement trivial utility functionality inside the project instead of adding third-party packages.
