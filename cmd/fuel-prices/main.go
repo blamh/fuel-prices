@@ -9,18 +9,20 @@ import (
 
 	"fuel-prices/internal/api"
 	"fuel-prices/internal/config"
-	"fuel-prices/internal/output"
 	"fuel-prices/internal/store"
 )
 
 func main() {
+	logger := newLogger(slog.LevelInfo)
+
 	cfg, err := config.Parse(os.Args[1:], os.Getenv)
 	if err != nil {
-		slog.Error("invalid configuration", "error", err)
+		logger.Error("invalid configuration", "error", err)
 		os.Exit(1)
 	}
 
-	logger := newLogger(cfg.LogLevel)
+	// Rebuild logger now that the configured level is known.
+	logger = newLogger(cfg.LogLevel)
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
@@ -54,11 +56,6 @@ func main() {
 		os.Exit(1)
 	}
 	logger.Info("pulled fuel products for facility", "facility_number", station.FacilityNumber, "products", string(productsJSON))
-
-	if err := output.WriteProducts(os.Stdout, station.Prices); err != nil {
-		logger.Error("failed to write JSON output", "error", err)
-		os.Exit(1)
-	}
 }
 
 func newLogger(level slog.Level) *slog.Logger {
