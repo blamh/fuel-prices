@@ -1,8 +1,6 @@
 # Fuel Prices Log CLI
 
-A small Go command-line application that fetches fuel prices from the public OK API for a single facility and outputs products as JSON on stdout.
-
-The app is designed for one-shot execution and is suitable for CronJob usage.
+A Go command-line application that fetches fuel prices from the public OK API for a single facility and stores the data in a Postgres database. The app is designed for one-shot execution and is suitable for CronJob usage.
 
 ## Features
 
@@ -51,7 +49,6 @@ CREATE TABLE IF NOT EXISTS fuel_price_history (
     price NUMERIC(10,2) NOT NULL,
     last_updated_time TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
-
 CREATE INDEX IF NOT EXISTS idx_fuel_price_history_lookup
     ON fuel_price_history (facility_number, product_name, last_updated_time DESC);
 ```
@@ -141,7 +138,3 @@ go build ./cmd/fuel-prices
 - Prefer Go standard library first.
 - Only add external dependencies that are trusted, actively maintained, and necessary.
 - Implement trivial utility functionality inside the project instead of adding third-party packages.
-
-## License
-
-Add the project license here (for example, MIT) once chosen.
