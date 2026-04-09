@@ -53,6 +53,36 @@ CREATE INDEX IF NOT EXISTS idx_fuel_price_history_lookup
     ON fuel_price_history (facility_number, product_name, last_updated_time DESC);
 ```
 
+Generate a strong 12 random bytes, base64 password from CLI (examples):
+
+```bash
+openssl rand -base64 12
+```
+
+Create a least-privilege app user (example):
+
+```sql
+-- Run as a privileged role (e.g. postgres)
+CREATE ROLE fuel_prices_app LOGIN PASSWORD 'change_me_strong_password' NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT;
+
+-- Allow the app to connect to only this database
+GRANT CONNECT ON DATABASE fuel_prices TO fuel_prices_app;
+
+-- Connect to fuel_prices, then grant minimal schema/table access
+GRANT USAGE ON SCHEMA public TO fuel_prices_app;
+
+-- App behavior needs: read latest price row and insert new rows when price changes
+GRANT SELECT, INSERT ON TABLE fuel_price_history TO fuel_prices_app;
+
+-- BIGSERIAL uses a sequence for id values
+GRANT USAGE, SELECT ON SEQUENCE fuel_price_history_id_seq TO fuel_prices_app;
+```
+
+Use this user for runtime env vars:
+
+- `DB_USER=fuel_prices_app`
+- `DB_PASSWORD=<the strong password you set>`
+
 ## Configuration
 
 ### CLI Flags
